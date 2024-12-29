@@ -1,8 +1,10 @@
 import { Router } from "express";
 
+const DEFAULT_CONTROLLERS_PATH = "src/controllers";
+
 let globalRouter: Router | null = null;
 let currentScope: string | null = null;
-let controllersPath: string = "../controllers";
+let controllersPath: string = DEFAULT_CONTROLLERS_PATH;
 
 export const getRouter = () => {
   if (!globalRouter) {
@@ -15,7 +17,7 @@ export const getRouter = () => {
 export const resetRouter = () => {
   globalRouter = null;
   currentScope = null;
-  controllersPath = "../controllers";
+  controllersPath = DEFAULT_CONTROLLERS_PATH;
 };
 
 export const setRouterCotrollersPath = (path: string) =>

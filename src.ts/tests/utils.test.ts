@@ -122,6 +122,6 @@ describe("resetRouter", () => {
 
     const newRouter = getRouter();
     expect(newRouter).not.toBe(initialRouter);
-    expect(getRouterCotrollersPath()).toBe("../controllers");
+    expect(getRouterCotrollersPath()).toBe("src/controllers");
   });
 });
