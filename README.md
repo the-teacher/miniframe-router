@@ -143,3 +143,11 @@ export const update = (req: Request, res: Response) => {
 - `get(path, controllerAction)`: Define GET route
 - `post(path, controllerAction)`: Define POST route
 - `routeScope(prefix, callback)`: Group routes under a common prefix
+
+### License
+
+MIT.
+
+### Author
+
+Ilya N. Zykin | [the-teacher](https://github.com/the-teacher)
