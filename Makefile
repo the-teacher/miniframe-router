@@ -42,3 +42,17 @@ test:
 
 test-watch:
 	docker-compose exec app yarn test:watch
+
+####################################
+# NPM
+####################################
+
+npm_login:
+	npm login
+
+npm_publish:
+	npm publish
+
+npm_bump_minor:
+	npm version minor
+
