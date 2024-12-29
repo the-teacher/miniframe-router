@@ -16,7 +16,7 @@
 `routes/index.ts`
 
 ```ts
-import { root, get, post, getRouter } from "@framework-core/routes";
+import { root, get, post, getRouter } from "miniframe-router/routes";
 
 // Определение корневого маршрута
 root("index#index");
@@ -81,7 +81,7 @@ import {
   post,
   getRouter,
   routeScope as scope,
-} from "@framework-core/routes";
+} from "miniframe-router/routes";
 
 scope("admin", () => {
   get("/users", "users#show");
@@ -143,3 +143,11 @@ export const update = (req: Request, res: Response) => {
 - `get(path, controllerAction)`: Определяет GET маршрут
 - `post(path, controllerAction)`: Определяет POST маршрут
 - `routeScope(prefix, callback)`: Группирует маршруты под общим префиксом
+
+### License
+
+MIT.
+
+### Author
+
+Ilya N. Zykin | [the-teacher](https://github.com/the-teacher)

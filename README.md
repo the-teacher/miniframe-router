@@ -9,6 +9,20 @@ A simple yet powerful routing solution for `Express.js` applications that provid
 - Scoped routes for better organization
 - Automatic controller loading
 
+## Installation
+
+```bash
+npm install miniframe-router
+```
+
+```bash
+yarn add miniframe-router
+```
+
+```bash
+pnpm add miniframe-router
+```
+
 ## Usage
 
 ### Basic Routes
@@ -16,7 +30,7 @@ A simple yet powerful routing solution for `Express.js` applications that provid
 `routes/index.ts`
 
 ```ts
-import { root, get, post, getRouter } from "@framework-core/routes";
+import { root, get, post, getRouter } from "miniframe-router/routes";
 
 // Define root route
 root("index#index");
@@ -81,7 +95,7 @@ import {
   post,
   getRouter,
   routeScope as scope,
-} from "@framework-core/routes";
+} from "miniframe-router/routes";
 
 scope("admin", () => {
   get("/users", "users#show");
