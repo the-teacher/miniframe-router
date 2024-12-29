@@ -1,0 +1,33 @@
+{
+  "name": "miniframe-router",
+  "version": "1.0.0",
+  "description": "Simple router for Express.js, making routes and controllers easy to manage.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "yarn test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/the-teacher/miniframe-router.git"
+  },
+  "keywords": [
+    "express",
+    "router",
+    "routing",
+    "express-router",
+    "miniframe-router",
+    "rails-inspired",
+    "lightweight",
+    "nodejs",
+    "controllers",
+    "routes",
+    "route-management",
+    "express-routing"
+  ],
+  "author": "Ilya N. Zykin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/the-teacher/miniframe-router/issues"
+  },
+  "homepage": "https://github.com/the-teacher/miniframe-router#readme"
+}
