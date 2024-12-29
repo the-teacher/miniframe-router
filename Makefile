@@ -33,3 +33,12 @@ build:
 
 dev:
 	docker-compose exec app yarn dev
+
+test:
+	make up
+	make install
+	docker-compose exec app yarn test
+	make down
+
+test-watch:
+	docker-compose exec app yarn test:watch

@@ -1,6 +1,6 @@
 import path from "path";
-import request from "supertest";
 import express from "express";
+import request from "supertest";
 
 import {
   root,
