@@ -16,7 +16,7 @@
 `routes/index.ts`
 
 ```ts
-import { root, get, post, getRouter } from "miniframe-router/routes";
+import { root, get, post, getRouter } from "miniframe-router";
 
 // Определение корневого маршрута
 root("index#index");
@@ -38,19 +38,20 @@ export default getRouter;
 src
   index.ts
 
-  framework/
-    routes/
-        index.ts
-    controllers/
-        indexController.ts
-        usersController.ts
-        postsController.ts
+  routes/
+      index.ts
+  controllers/
+      indexController.ts
+      usersController.ts
+      postsController.ts
 ```
+
+`index.ts`
 
 ```ts
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import getRoutes from "./framework/routes"; // <<< ОПРЕДЕЛЯЕМ МАРШРУТЫ
+import getRoutes from "./routes"; // <<< ОПРЕДЕЛЯЕМ МАРШРУТЫ
 
 const app = express();
 
@@ -73,6 +74,8 @@ app.listen(4000, () => {
 ### Группировка маршрутов
 
 Группируйте связанные маршруты под общим префиксом:
+
+`routes/index.ts`
 
 ```ts
 import {
@@ -109,23 +112,23 @@ export default getRouter;
 src
   index.ts
 
-  framework/
-    routes/
-        index.ts
-    controllers/
-        indexController.ts
-        usersController.ts
-        postsController.ts
+  routes/
+      index.ts
+  controllers/
+      indexController.ts
+      usersController.ts
+      postsController.ts
 
-        admin/
-            usersController.ts
-            postsController.ts
+      admin/
+          usersController.ts
+          postsController.ts
 ```
 
 Пример контроллера:
 
+`controllers/usersController.ts`
+
 ```typescript
-// controllers/usersController.ts
 import { Request, Response } from "express";
 
 export const show = (req: Request, res: Response) => {

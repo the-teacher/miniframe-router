@@ -30,7 +30,7 @@ pnpm add miniframe-router
 `routes/index.ts`
 
 ```ts
-import { root, get, post, getRouter } from "miniframe-router/routes";
+import { root, get, post, getRouter } from "miniframe-router";
 
 // Define root route
 root("index#index");
@@ -52,19 +52,20 @@ Application files structure:
 src
   index.ts
 
-  framework/
-    routes/
-        index.ts
-    controllers/
-        indexController.ts
-        usersController.ts
-        postsController.ts
+  routes/
+      index.ts
+  controllers/
+      indexController.ts
+      usersController.ts
+      postsController.ts
 ```
+
+`index.ts`
 
 ```ts
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import getRoutes from "./framework/routes";
+import getRoutes from "./routes";
 
 const app = express();
 
@@ -88,6 +89,8 @@ app.listen(4000, () => {
 
 Group related routes under a common prefix:
 
+`routes/index.ts`
+
 ```ts
 import {
   root,
@@ -95,7 +98,7 @@ import {
   post,
   getRouter,
   routeScope as scope,
-} from "miniframe-router/routes";
+} from "miniframe-router";
 
 scope("admin", () => {
   get("/users", "users#show");
@@ -123,23 +126,23 @@ Controllers should be placed in the `controllers` directory. For scoped routes, 
 src
   index.ts
 
-  framework/
-    routes/
-        index.ts
-    controllers/
-        indexController.ts
-        usersController.ts
-        postsController.ts
+  routes/
+      index.ts
+  controllers/
+      indexController.ts
+      usersController.ts
+      postsController.ts
 
-        admin/
-            usersController.ts
-            postsController.ts
+      admin/
+          usersController.ts
+          postsController.ts
 ```
 
 Example controller:
 
+`controllers/usersController.ts`
+
 ```typescript
-// controllers/usersController.ts
 import { Request, Response } from "express";
 
 export const show = (req: Request, res: Response) => {
