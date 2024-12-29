@@ -4,7 +4,9 @@
   "description": "Simple router for Express.js, making routes and controllers easy to manage.",
   "main": "src/index.js",
   "scripts": {
-    "test": "yarn test"
+    "build": "node build.js",
+    "test": "yarn test",
+    "dev": "node build.js --watch"
   },
   "repository": {
     "type": "git",
@@ -29,5 +31,14 @@
   "bugs": {
     "url": "https://github.com/the-teacher/miniframe-router/issues"
   },
-  "homepage": "https://github.com/the-teacher/miniframe-router#readme"
+  "homepage": "https://github.com/the-teacher/miniframe-router#readme",
+  "devDependencies": {
+    "esbuild": "^0.20.2",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.30",
+    "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "express": "^4.18.3"
+  }
 }
