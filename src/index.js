@@ -1,3 +1,4 @@
+"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -42,9 +43,10 @@ module.exports = __toCommonJS(src_exports);
 
 // src.ts/base.ts
 var import_express = require("express");
+var DEFAULT_CONTROLLERS_PATH = "src/controllers";
 var globalRouter = null;
 var currentScope = null;
-var controllersPath = "../controllers";
+var controllersPath = DEFAULT_CONTROLLERS_PATH;
 var getRouter = () => {
   if (!globalRouter) {
     globalRouter = (0, import_express.Router)();
@@ -54,7 +56,7 @@ var getRouter = () => {
 var resetRouter = () => {
   globalRouter = null;
   currentScope = null;
-  controllersPath = "../controllers";
+  controllersPath = DEFAULT_CONTROLLERS_PATH;
 };
 var setRouterCotrollersPath = (path2) => controllersPath = path2;
 var getRouterCotrollersPath = () => controllersPath;
@@ -75,6 +77,10 @@ var routeScope = (scope, routesDefinitionCallback) => {
 
 // src.ts/utils.ts
 var import_path = __toESM(require("path"));
+var getProjectRoot = () => {
+  let currentDir = process.cwd();
+  return currentDir;
+};
 var parseControllerString = (controllerActionString) => {
   const [controller, action] = controllerActionString.split("#");
   if (!controller || !action) {
@@ -87,17 +93,18 @@ var parseControllerString = (controllerActionString) => {
 var requireController = (controllerPath) => require(controllerPath);
 var buildControllerPath = (controllerName) => {
   const scope = getRouterScope();
+  const projectRoot = getProjectRoot();
+  const controllersBasePath = import_path.default.resolve(
+    projectRoot,
+    getRouterCotrollersPath()
+  );
   if (controllerName.includes("/")) {
-    return import_path.default.join(getRouterCotrollersPath(), `${controllerName}Controller`);
+    return import_path.default.join(controllersBasePath, `${controllerName}Controller`);
   }
   if (scope) {
-    return import_path.default.join(
-      getRouterCotrollersPath(),
-      scope,
-      `${controllerName}Controller`
-    );
+    return import_path.default.join(controllersBasePath, scope, `${controllerName}Controller`);
   }
-  return import_path.default.join(getRouterCotrollersPath(), `${controllerName}Controller`);
+  return import_path.default.join(controllersBasePath, `${controllerName}Controller`);
 };
 var loadController = (controllerName, action) => {
   const controllerPath = buildControllerPath(controllerName);

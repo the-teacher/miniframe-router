@@ -29,7 +29,10 @@ install:
 	docker-compose exec app yarn install
 
 build:
+	make up
+	make install
 	docker-compose exec app yarn build
+	make down
 
 dev:
 	docker-compose exec app yarn dev
@@ -53,6 +56,17 @@ npm_login:
 npm_publish:
 	npm publish
 
+npm_bump_patch:
+	make build
+	npm version patch
+
 npm_bump_minor:
+	make build
 	npm version minor
 
+npm_bump_major:
+	make build
+	npm version major
+
+npm_unpublish:
+	npm unpublish miniframe-router@1.1.0
