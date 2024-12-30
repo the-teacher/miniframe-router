@@ -153,7 +153,7 @@ export const destroy = (req: Request, res: Response) => {
 ### Steps:
 
 1. Create a development container using **Docker**.
-2. Set up **ESLint** for compiling TypeScript to JavaScript.
+2. Set up **ESBuild** for compiling TypeScript to JavaScript.
 3. Install **Jest** for testing.
 4. Write tests to validate the first version of the router.
 5. Implement the router until all tests pass.
@@ -197,3 +197,8 @@ NPM package: [miniframe-router](https://www.npmjs.com/package/miniframe-router)
 Like, share, and subscribe! Constructive feedback is always welcome.
 
 Author's page: [GitHub - the-teacher](https://github.com/the-teacher)
+
+---
+
+- https://dev.to/the_teacher/miniframe-router-router-for-expressjs-applications-2bk7
+- https://the-teacher.medium.com/miniframe-router-router-for-express-js-applications-75a2a3b40008
