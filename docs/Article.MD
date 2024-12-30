@@ -202,3 +202,18 @@ Author's page: [GitHub - the-teacher](https://github.com/the-teacher)
 
 - https://dev.to/the_teacher/miniframe-router-router-for-expressjs-applications-2bk7
 - https://the-teacher.medium.com/miniframe-router-router-for-express-js-applications-75a2a3b40008
+
+---
+
+Hi everyone! 👋
+
+I’m excited to introduce miniframe-router — https://lnkd.in/d_zQpfx8
+This is a minimalist router for Express.js applications.
+
+💡 Key features: ✅ Simple route configuration in a dedicated file. ✅ Supports nested routes. ✅ Controller structure for easier development.
+
+The project is already in production and performs perfectly with dozens of routes. I’d love to hear your feedback, get your stars ⭐️, and see your ideas for improvements!
+
+🔗 Repository: GitHub - miniframe-router: https://lnkd.in/d_zQpfx8
+
+#NodeJS #ExpressJS #OpenSource #WebDevelopment
