@@ -9,6 +9,26 @@
 - Группировка маршрутов для улучшенной организации
 - Автоматическая загрузка контроллеров
 
+## Документация
+
+- Development: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
+- Разработка (RU): [docs/DEVELOPMENT.ru.md](docs/DEVELOPMENT.ru.md)
+- Скелет приложения: [docs/demo/README.md](docs/demo/README.md)
+
+## Установка
+
+```bash
+npm install miniframe-router
+```
+
+```bash
+yarn add miniframe-router
+```
+
+```bash
+pnpm add miniframe-router
+```
+
 ## Использование
 
 ### Базовые маршруты
