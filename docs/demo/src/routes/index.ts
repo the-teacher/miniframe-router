@@ -2,11 +2,13 @@ import {
   root,
   get,
   post,
-  routeScope,
+  routeScope as scope,
   getRouter,
   setRouterCotrollersPath,
 } from "miniframe-router";
 
+// Set the path to the controllers
+// default is "src/controllers"
 setRouterCotrollersPath("src/controllers");
 
 // Root routes
@@ -20,7 +22,7 @@ post("/users/:id", "users#update");
 post("/users/:id/destroy", "users#destroy");
 
 // Posts routes with scope
-routeScope("blog", () => {
+scope("blog", () => {
   get("/posts", "posts#index");
   get("/posts/:id", "posts#show");
   post("/posts", "posts#create");
