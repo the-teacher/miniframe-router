@@ -22,3 +22,14 @@ export const updateUserAction = (req: Request, res: Response) => {
   const { name, email } = req.body;
   return res.json({ id, name, email, message: `User ${id} updated` });
 };
+
+export const middlewareAction = (req: Request, res: Response) => {
+  return res.json({ testData: (req as any).testData });
+};
+
+export const protectedAction = (req: Request, res: Response) => {
+  return res.json({
+    testData: (req as any).testData,
+    message: "Protected resource accessed",
+  });
+};
