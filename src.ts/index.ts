@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, RequestHandler } from "express";
 
 import {
   getRouter,
@@ -10,33 +10,61 @@ import {
 
 import { parseControllerString, loadController } from "./utils";
 
-export const root = (controllerAction: string) => {
+// Type definition for route options with optional middleware array
+type RouteOptions = {
+  withMiddlewares?: RequestHandler[];
+};
+
+export const root = (controllerAction: string, options: RouteOptions = {}) => {
   const { controller, action } =
     typeof controllerAction === "string"
       ? parseControllerString(controllerAction)
       : controllerAction;
 
-  getRouter().get("/", loadController(controller, action));
+  const handlers = [
+    ...(options.withMiddlewares || []),
+    loadController(controller, action),
+  ];
+
+  getRouter().get("/", ...handlers);
 };
 
-export const get = (urlPath: string, controllerAction: string) => {
+export const get = (
+  urlPath: string,
+  controllerAction: string,
+  options: RouteOptions = {}
+) => {
   const { controller, action } =
     typeof controllerAction === "string"
       ? parseControllerString(controllerAction)
       : controllerAction;
 
   const normalizedPath = urlPath.startsWith("/") ? urlPath.slice(1) : urlPath;
-  getRouter().get(`/${normalizedPath}`, loadController(controller, action));
+  const handlers = [
+    ...(options.withMiddlewares || []),
+    loadController(controller, action),
+  ];
+
+  getRouter().get(`/${normalizedPath}`, ...handlers);
 };
 
-export const post = (urlPath: string, controllerAction: string) => {
+export const post = (
+  urlPath: string,
+  controllerAction: string,
+  options: RouteOptions = {}
+) => {
   const { controller, action } =
     typeof controllerAction === "string"
       ? parseControllerString(controllerAction)
       : controllerAction;
 
   const normalizedPath = urlPath.startsWith("/") ? urlPath.slice(1) : urlPath;
-  getRouter().post(`/${normalizedPath}`, loadController(controller, action));
+  const handlers = [
+    ...(options.withMiddlewares || []),
+    loadController(controller, action),
+  ];
+
+  getRouter().post(`/${normalizedPath}`, ...handlers);
 };
 
 export {
