@@ -52,6 +52,36 @@ post("/posts", "posts#update");
 export default getRouter;
 ```
 
+### Маршруты с Middleware
+
+Вы можете добавлять middleware к любому маршруту:
+
+```ts
+import { authenticate } from "./middlewares/auth";
+import { validateUser } from "./middlewares/validation";
+
+// Один middleware
+get("/users/:id", "users#show", {
+  withMiddlewares: [authenticate],
+});
+
+// Несколько middleware в порядке выполнения
+post("/users", "users#create", {
+  withMiddlewares: [authenticate, validateUser],
+});
+
+// Middleware в сгруппированных маршрутах
+scope("admin", () => {
+  get("/users", "users#show", {
+    withMiddlewares: [authenticate],
+  });
+
+  post("/users", "users#create", {
+    withMiddlewares: [authenticate, validateUser],
+  });
+});
+```
+
 Структура файлов приложения:
 
 ```bash

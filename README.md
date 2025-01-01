@@ -52,6 +52,36 @@ post("/posts", "posts#update");
 export default getRouter;
 ```
 
+### Routes with Middleware
+
+You can add middleware to any route:
+
+```ts
+import { authenticate } from "./middlewares/auth";
+import { validateUser } from "./middlewares/validation";
+
+// Single middleware
+get("/users/:id", "users#show", {
+  withMiddlewares: [authenticate],
+});
+
+// Multiple middleware in execution order
+post("/users", "users#create", {
+  withMiddlewares: [authenticate, validateUser],
+});
+
+// Middleware with scoped routes
+scope("admin", () => {
+  get("/users", "users#show", {
+    withMiddlewares: [authenticate],
+  });
+
+  post("/users", "users#create", {
+    withMiddlewares: [authenticate, validateUser],
+  });
+});
+```
+
 Application files structure:
 
 ```bash

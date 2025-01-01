@@ -7,27 +7,33 @@ import {
   setRouterCotrollersPath,
 } from "miniframe-router";
 
+import { authenticate } from "../middlewares/auth";
+
 // Set the path to the controllers
-// default is "src/controllers"
 setRouterCotrollersPath("src/controllers");
 
-// Root routes
+// Public routes
 root("index#home");
+get("/posts", "blog/posts#index");
+get("/posts/:id", "blog/posts#show");
 
-// Basic CRUD routes
-get("/users", "users#index");
-get("/users/:id", "users#show");
-post("/users", "users#create");
-post("/users/:id", "users#update");
-post("/users/:id/destroy", "users#destroy");
+// Protected routes with middleware
+scope("admin", () => {
+  get("/posts", "blog/posts#index", {
+    withMiddlewares: [authenticate],
+  });
 
-// Posts routes with scope
-scope("blog", () => {
-  get("/posts", "posts#index");
-  get("/posts/:id", "posts#show");
-  post("/posts", "posts#create");
-  post("/posts/:id", "posts#update");
-  post("/posts/:id/destroy", "posts#destroy");
+  post("/posts", "blog/posts#create", {
+    withMiddlewares: [authenticate],
+  });
+
+  post("/posts/:id", "blog/posts#update", {
+    withMiddlewares: [authenticate],
+  });
+
+  post("/posts/:id/destroy", "blog/posts#destroy", {
+    withMiddlewares: [authenticate],
+  });
 });
 
 export default getRouter;
