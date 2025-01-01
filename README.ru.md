@@ -82,6 +82,48 @@ scope("admin", () => {
 });
 ```
 
+### Группировка маршрутов с Middleware
+
+Вы можете добавлять middleware как к отдельным маршрутам, так и ко всей группе маршрутов:
+
+```ts
+import { authenticate } from "./middlewares/auth";
+import { validateUser } from "./middlewares/validation";
+import { logRequest } from "./middlewares/logging";
+
+// Применить middleware ко всем маршрутам в группе
+scope(
+  "admin",
+  () => {
+    // Эти маршруты будут требовать аутентификации
+    get("/users", "users#index");
+    post("/users", "users#create");
+
+    // Этот маршрут будет требовать и аутентификации, и валидации
+    post("/users/:id", "users#update", {
+      withMiddlewares: [validateUser],
+    });
+  },
+  {
+    withMiddlewares: [authenticate],
+  }
+);
+
+// Комбинирование нескольких middleware для группы
+scope(
+  "api",
+  () => {
+    get("/stats", "stats#index");
+    get("/health", "health#check");
+  },
+  {
+    withMiddlewares: [authenticate, logRequest],
+  }
+);
+```
+
+Middleware, указанные в опциях группы, будут применяться ко всем маршрутам внутри этой группы. При этом вы можете добавлять дополнительные middleware к конкретным маршрутам, которые будут выполняться после middleware группы.
+
 Структура файлов приложения:
 
 ```bash

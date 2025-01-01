@@ -82,6 +82,49 @@ scope("admin", () => {
 });
 ```
 
+### Scoped Routes with Middleware
+
+You can add middleware to both individual routes and entire scopes:
+
+```ts
+import { authenticate } from "./middlewares/auth";
+import { validateUser } from "./middlewares/validation";
+import { logRequest } from "./middlewares/logging";
+
+// Apply middleware to all routes within scope
+scope(
+  "admin",
+  () => {
+    // These routes will require authentication
+    get("/users", "users#index");
+    post("/users", "users#create");
+
+    // This route will require both authentication and validation
+    post("/users/:id", "users#update", {
+      withMiddlewares: [validateUser],
+    });
+  },
+  {
+    withMiddlewares: [authenticate],
+  }
+);
+
+// Combine multiple middleware for scope
+scope(
+  "api",
+  () => {
+    get("/stats", "stats#index");
+    get("/health", "health#check");
+  },
+  {
+    withMiddlewares: [authenticate, logRequest],
+  }
+);
+```
+
+Middleware specified in the scope options will be applied to all routes within that scope.
+You can still add route-specific middleware that will be executed after the scope middleware.
+
 Application files structure:
 
 ```bash
