@@ -6,6 +6,7 @@ import {
   setRouterCotrollersPath,
   resetRouter,
   routeScope,
+  getScopeMiddlewares,
 } from "./base";
 
 import { parseControllerString, loadController } from "./utils";
@@ -22,6 +23,7 @@ export const root = (controllerAction: string, options: RouteOptions = {}) => {
       : controllerAction;
 
   const handlers = [
+    ...getScopeMiddlewares(),
     ...(options.withMiddlewares || []),
     loadController(controller, action),
   ];
@@ -41,6 +43,7 @@ export const get = (
 
   const normalizedPath = urlPath.startsWith("/") ? urlPath.slice(1) : urlPath;
   const handlers = [
+    ...getScopeMiddlewares(),
     ...(options.withMiddlewares || []),
     loadController(controller, action),
   ];
@@ -60,12 +63,16 @@ export const post = (
 
   const normalizedPath = urlPath.startsWith("/") ? urlPath.slice(1) : urlPath;
   const handlers = [
+    ...getScopeMiddlewares(),
     ...(options.withMiddlewares || []),
     loadController(controller, action),
   ];
 
   getRouter().post(`/${normalizedPath}`, ...handlers);
 };
+
+// Export scope as an alias for routeScope
+export const scope = routeScope;
 
 export {
   getRouter,

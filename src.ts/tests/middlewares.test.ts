@@ -9,6 +9,7 @@ import {
   getRouter,
   setRouterCotrollersPath,
   resetRouter,
+  scope,
 } from "../index";
 
 import { addDataMiddleware, authMiddleware } from "./middlewares";
@@ -84,5 +85,75 @@ describe("Routes with Middlewares", () => {
 
     expect(successResponse.status).toBe(200);
     expect(successResponse.text).toBe("Hello Post!");
+  });
+});
+
+describe("Scoped Routes with Middlewares", () => {
+  beforeEach(() => {
+    resetRouter();
+    setRouterCotrollersPath(path.join(__dirname, "./test_controllers"));
+  });
+
+  test("should apply scope middleware to all routes within scope", async () => {
+    scope(
+      "admin",
+      () => {
+        get("/test", "admin/test#middlewareAction");
+        post("/secure", "admin/test#postAction");
+      },
+      {
+        withMiddlewares: [authMiddleware],
+      }
+    );
+
+    const app = express();
+    app.use(getRouter());
+
+    // Both routes should require authentication
+    const getResponse = await request(app).get("/admin/test");
+    expect(getResponse.status).toBe(401);
+
+    const postResponse = await request(app).post("/admin/secure");
+    expect(postResponse.status).toBe(401);
+
+    // With auth header, both should work
+    const authedGetResponse = await request(app)
+      .get("/admin/test")
+      .set("Authorization", "Bearer valid-token");
+    expect(authedGetResponse.status).toBe(200);
+
+    const authedPostResponse = await request(app)
+      .post("/admin/secure")
+      .set("Authorization", "Bearer valid-token");
+    expect(authedPostResponse.status).toBe(200);
+  });
+
+  test("should combine scope and route middleware", async () => {
+    scope(
+      "admin",
+      () => {
+        get("/data", "admin/test#middlewareAction", {
+          withMiddlewares: [addDataMiddleware],
+        });
+      },
+      {
+        withMiddlewares: [authMiddleware],
+      }
+    );
+
+    const app = express();
+    app.use(getRouter());
+
+    // Without auth should fail
+    const failedResponse = await request(app).get("/admin/data");
+    expect(failedResponse.status).toBe(401);
+
+    // With auth should pass and include middleware data
+    const successResponse = await request(app)
+      .get("/admin/data")
+      .set("Authorization", "Bearer valid-token");
+
+    expect(successResponse.status).toBe(200);
+    expect(successResponse.body.testData).toBe("middleware data");
   });
 });
