@@ -57,6 +57,8 @@ export default getRouter;
 You can add middleware to any route:
 
 ```ts
+import { get, post, routeScope as scope } from "miniframe-router";
+
 import { authenticate } from "./middlewares/auth";
 import { validateUser } from "./middlewares/validation";
 
