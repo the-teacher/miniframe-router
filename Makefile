@@ -61,12 +61,20 @@ npm_bump_patch:
 	npm version patch
 
 npm_bump_minor:
-	make build
-	npm version minor
+	make up
+	make install
+	docker-compose exec app bash -c "git config --global user.email 'dev@izykin.com'"
+	docker-compose exec app bash -c "git config --global user.name 'Ilya N. Zykin'"
+	docker-compose exec app npm version minor
+	make down
 
 npm_bump_major:
-	make build
-	npm version major
+	make up
+	make install
+	docker-compose exec app bash -c "git config --global user.email 'dev@izykin.com'"
+	docker-compose exec app bash -c "git config --global user.name 'Ilya N. Zykin'"
+	docker-compose exec app npm version major
+	make down
 
 npm_unpublish:
 	npm unpublish miniframe-router@1.1.0

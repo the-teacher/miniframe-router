@@ -1,6 +1,6 @@
 {
   "name": "miniframe-router",
-  "version": "1.2.0",
+  "version": "1.5.0",
   "description": "Simple router for Express.js, making routes and controllers easy to manage.",
   "main": "src/index.js",
   "scripts": {

@@ -37,6 +37,7 @@ __export(src_exports, {
   resetRouter: () => resetRouter,
   root: () => root,
   routeScope: () => routeScope,
+  scope: () => scope,
   setRouterCotrollersPath: () => setRouterCotrollersPath
 });
 module.exports = __toCommonJS(src_exports);
@@ -46,6 +47,7 @@ var import_express = require("express");
 var DEFAULT_CONTROLLERS_PATH = "src/controllers";
 var globalRouter = null;
 var currentScope = null;
+var scopeMiddlewares = [];
 var controllersPath = DEFAULT_CONTROLLERS_PATH;
 var getRouter = () => {
   if (!globalRouter) {
@@ -56,23 +58,31 @@ var getRouter = () => {
 var resetRouter = () => {
   globalRouter = null;
   currentScope = null;
+  scopeMiddlewares = [];
   controllersPath = DEFAULT_CONTROLLERS_PATH;
 };
 var setRouterCotrollersPath = (path2) => controllersPath = path2;
 var getRouterCotrollersPath = () => controllersPath;
-var setRouterScope = (scope) => {
-  currentScope = scope;
+var setRouterScope = (scope2) => {
+  currentScope = scope2;
 };
 var getRouterScope = () => currentScope;
-var routeScope = (scope, routesDefinitionCallback) => {
+var getScopeMiddlewares = () => scopeMiddlewares;
+var setScopeMiddlewares = (middlewares) => {
+  scopeMiddlewares = middlewares;
+};
+var routeScope = (scope2, routesDefinitionCallback, options = {}) => {
   const router = (0, import_express.Router)();
   const originalRouter = globalRouter;
+  const originalScopeMiddlewares = scopeMiddlewares;
   globalRouter = router;
-  setRouterScope(scope);
+  setRouterScope(scope2);
+  setScopeMiddlewares(options.withMiddlewares || []);
   routesDefinitionCallback();
   globalRouter = originalRouter;
   setRouterScope(null);
-  getRouter().use(`/${scope}`, router);
+  setScopeMiddlewares(originalScopeMiddlewares);
+  getRouter().use(`/${scope2}`, router);
 };
 
 // src.ts/utils.ts
@@ -92,7 +102,7 @@ var parseControllerString = (controllerActionString) => {
 };
 var requireController = (controllerPath) => require(controllerPath);
 var buildControllerPath = (controllerName) => {
-  const scope = getRouterScope();
+  const scope2 = getRouterScope();
   const projectRoot = getProjectRoot();
   const controllersBasePath = import_path.default.resolve(
     projectRoot,
@@ -101,8 +111,8 @@ var buildControllerPath = (controllerName) => {
   if (controllerName.includes("/")) {
     return import_path.default.join(controllersBasePath, `${controllerName}Controller`);
   }
-  if (scope) {
-    return import_path.default.join(controllersBasePath, scope, `${controllerName}Controller`);
+  if (scope2) {
+    return import_path.default.join(controllersBasePath, scope2, `${controllerName}Controller`);
   }
   return import_path.default.join(controllersBasePath, `${controllerName}Controller`);
 };
@@ -119,20 +129,36 @@ var loadController = (controllerName, action) => {
 };
 
 // src.ts/index.ts
-var root = (controllerAction) => {
+var root = (controllerAction, options = {}) => {
   const { controller, action } = typeof controllerAction === "string" ? parseControllerString(controllerAction) : controllerAction;
-  getRouter().get("/", loadController(controller, action));
+  const handlers = [
+    ...getScopeMiddlewares(),
+    ...options.withMiddlewares || [],
+    loadController(controller, action)
+  ];
+  getRouter().get("/", ...handlers);
 };
-var get = (urlPath, controllerAction) => {
+var get = (urlPath, controllerAction, options = {}) => {
   const { controller, action } = typeof controllerAction === "string" ? parseControllerString(controllerAction) : controllerAction;
   const normalizedPath = urlPath.startsWith("/") ? urlPath.slice(1) : urlPath;
-  getRouter().get(`/${normalizedPath}`, loadController(controller, action));
+  const handlers = [
+    ...getScopeMiddlewares(),
+    ...options.withMiddlewares || [],
+    loadController(controller, action)
+  ];
+  getRouter().get(`/${normalizedPath}`, ...handlers);
 };
-var post = (urlPath, controllerAction) => {
+var post = (urlPath, controllerAction, options = {}) => {
   const { controller, action } = typeof controllerAction === "string" ? parseControllerString(controllerAction) : controllerAction;
   const normalizedPath = urlPath.startsWith("/") ? urlPath.slice(1) : urlPath;
-  getRouter().post(`/${normalizedPath}`, loadController(controller, action));
+  const handlers = [
+    ...getScopeMiddlewares(),
+    ...options.withMiddlewares || [],
+    loadController(controller, action)
+  ];
+  getRouter().post(`/${normalizedPath}`, ...handlers);
 };
+var scope = routeScope;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   get,
@@ -142,6 +168,7 @@ var post = (urlPath, controllerAction) => {
   resetRouter,
   root,
   routeScope,
+  scope,
   setRouterCotrollersPath
 });
 //# sourceMappingURL=index.js.map
