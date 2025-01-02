@@ -56,23 +56,28 @@ npm_login:
 npm_publish:
 	npm publish
 
-npm_bump_patch:
-	make build
-	npm version patch
+setup_git_user:
+	docker-compose exec app bash -c "git config --global user.email 'dev@izykin.com'"
+	docker-compose exec app bash -c "git config --global user.name 'Ilya N. Zykin'"
 
+npm_bump_patch:
+	make up
+	make install
+	make setup_git_user
+	docker-compose exec app npm version patch
+	make down
+	
 npm_bump_minor:
 	make up
 	make install
-	docker-compose exec app bash -c "git config --global user.email 'dev@izykin.com'"
-	docker-compose exec app bash -c "git config --global user.name 'Ilya N. Zykin'"
+	make setup_git_user
 	docker-compose exec app npm version minor
 	make down
 
 npm_bump_major:
 	make up
 	make install
-	docker-compose exec app bash -c "git config --global user.email 'dev@izykin.com'"
-	docker-compose exec app bash -c "git config --global user.name 'Ilya N. Zykin'"
+	make setup_git_user
 	docker-compose exec app npm version major
 	make down
 
