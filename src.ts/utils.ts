@@ -1,52 +1,42 @@
 import path from "path";
-import { getRouterCotrollersPath, getRouterScope } from "./base";
+import { getActionsPath, getRouterScope } from "./base";
 
-const getProjectRoot = () => {
-  let currentDir = process.cwd();
-  return currentDir;
-};
+const getProjectRoot = () => process.cwd();
 
-export const parseControllerString = (controllerActionString: string) => {
-  const [controller, action] = controllerActionString.split("#");
-  if (!controller || !action) {
+export const parseScopeActionString = (scopeActionString: string) => {
+  const [scope, action] = scopeActionString.split("#");
+  if (!scope || !action) {
     throw new Error(
-      `Invalid format for controller action: ${controllerActionString}. Expected format is 'controller#action'.`
+      `Invalid format for scope action: ${scopeActionString}. Expected format is 'scope#action'.`
     );
   }
-  return { controller, action };
+  return { scope, action };
 };
 
-export const requireController = (controllerPath: string) =>
-  require(controllerPath);
-
-export const buildControllerPath = (controllerName: string) => {
-  const scope = getRouterScope();
+export const buildActionPath = (scopeName: string, actionName: string) => {
+  const currentScope = getRouterScope();
   const projectRoot = getProjectRoot();
-  const controllersBasePath = path.resolve(
-    projectRoot,
-    getRouterCotrollersPath()
-  );
+  const actionsBasePath = path.resolve(projectRoot, getActionsPath());
 
-  if (controllerName.includes("/")) {
-    return path.join(controllersBasePath, `${controllerName}Controller`);
+  if (currentScope) {
+    if (scopeName === currentScope) {
+      return path.join(actionsBasePath, currentScope, `${actionName}Action`);
+    }
+    return path.join(actionsBasePath, scopeName, `${actionName}Action`);
   }
 
-  if (scope) {
-    return path.join(controllersBasePath, scope, `${controllerName}Controller`);
-  }
-
-  return path.join(controllersBasePath, `${controllerName}Controller`);
+  return path.join(actionsBasePath, scopeName, `${actionName}Action`);
 };
 
-export const loadController = (controllerName: string, action: string) => {
-  const controllerPath = buildControllerPath(controllerName);
-  const controller = requireController(controllerPath);
+export const loadAction = (scopeName: string, actionName: string) => {
+  const actionPath = buildActionPath(scopeName, actionName);
+  const action = require(actionPath);
 
-  if (controller[action]) {
-    return controller[action];
-  } else {
+  if (typeof action.perform !== "function") {
     throw new Error(
-      `Action ${action} not found in controller ${controllerName}`
+      `Action ${actionName} in scope ${scopeName} must export a 'perform' function`
     );
   }
+
+  return action.perform;
 };

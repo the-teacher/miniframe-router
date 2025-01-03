@@ -7,7 +7,7 @@ import {
   get,
   post,
   getRouter,
-  setRouterCotrollersPath,
+  setActionsPath,
   resetRouter,
   routeScope as scope,
 } from "../index";
@@ -15,14 +15,14 @@ import {
 describe("Routes", () => {
   beforeEach(() => {
     resetRouter();
-    setRouterCotrollersPath(path.join(__dirname, "./test_controllers"));
+    setActionsPath(path.join(__dirname, "./test_actions"));
   });
 
   describe("Basic routes", () => {
     beforeEach(() => {
-      root("test#indexAction");
-      get("/get", "test#getAction");
-      post("/post", "test#postAction");
+      root("index#index");
+      get("/get", "test#get");
+      post("/post", "test#post");
     });
 
     test("should return the correct response for the root route", async () => {
@@ -53,8 +53,8 @@ describe("Routes", () => {
   describe("Scoped routes", () => {
     beforeEach(() => {
       scope("admin", () => {
-        get("show", "admin#showAction");
-        post("update", "admin#updateAction");
+        get("show", "admin#show");
+        post("update", "admin#update");
       });
     });
 
@@ -86,10 +86,10 @@ describe("Routes", () => {
   describe("Routes with parameters", () => {
     beforeEach(() => {
       resetRouter();
-      setRouterCotrollersPath(path.join(__dirname, "./test_controllers"));
+      setActionsPath(path.join(__dirname, "./test_actions"));
 
-      get("/users/:id", "test#getUserAction");
-      post("/users/:id", "test#updateUserAction");
+      get("/users/:id", "test#getUser");
+      post("/users/:id", "test#updateUser");
     });
 
     test("should handle route parameters in GET request", async () => {

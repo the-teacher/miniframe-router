@@ -1,11 +1,11 @@
 import { Router, RequestHandler } from "express";
 
-const DEFAULT_CONTROLLERS_PATH = "src/controllers";
+const DEFAULT_ACTIONS_PATH = "src/actions";
 
 let globalRouter: Router | null = null;
 let currentScope: string | null = null;
 let scopeMiddlewares: RequestHandler[] = [];
-let controllersPath: string = DEFAULT_CONTROLLERS_PATH;
+let actionsPath: string = DEFAULT_ACTIONS_PATH;
 
 export const getRouter = () => {
   if (!globalRouter) {
@@ -19,13 +19,12 @@ export const resetRouter = () => {
   globalRouter = null;
   currentScope = null;
   scopeMiddlewares = [];
-  controllersPath = DEFAULT_CONTROLLERS_PATH;
+  actionsPath = DEFAULT_ACTIONS_PATH;
 };
 
-export const setRouterCotrollersPath = (path: string) =>
-  (controllersPath = path);
+export const setActionsPath = (path: string) => (actionsPath = path);
 
-export const getRouterCotrollersPath = () => controllersPath;
+export const getActionsPath = () => actionsPath;
 
 // Store current routing scope
 export const setRouterScope = (scope: string | null) => {

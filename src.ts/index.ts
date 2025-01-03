@@ -2,30 +2,30 @@ import { Router, RequestHandler } from "express";
 
 import {
   getRouter,
-  getRouterCotrollersPath,
-  setRouterCotrollersPath,
+  getActionsPath,
+  setActionsPath,
   resetRouter,
   routeScope,
   getScopeMiddlewares,
 } from "./base";
 
-import { parseControllerString, loadController } from "./utils";
+import { parseScopeActionString, loadAction } from "./utils";
 
 // Type definition for route options with optional middleware array
 type RouteOptions = {
   withMiddlewares?: RequestHandler[];
 };
 
-export const root = (controllerAction: string, options: RouteOptions = {}) => {
-  const { controller, action } =
-    typeof controllerAction === "string"
-      ? parseControllerString(controllerAction)
-      : controllerAction;
+export const root = (scopeAction: string, options: RouteOptions = {}) => {
+  const { scope, action } =
+    typeof scopeAction === "string"
+      ? parseScopeActionString(scopeAction)
+      : scopeAction;
 
   const handlers = [
     ...getScopeMiddlewares(),
     ...(options.withMiddlewares || []),
-    loadController(controller, action),
+    loadAction(scope, action),
   ];
 
   getRouter().get("/", ...handlers);
@@ -33,19 +33,19 @@ export const root = (controllerAction: string, options: RouteOptions = {}) => {
 
 export const get = (
   urlPath: string,
-  controllerAction: string,
+  scopeAction: string,
   options: RouteOptions = {}
 ) => {
-  const { controller, action } =
-    typeof controllerAction === "string"
-      ? parseControllerString(controllerAction)
-      : controllerAction;
+  const { scope, action } =
+    typeof scopeAction === "string"
+      ? parseScopeActionString(scopeAction)
+      : scopeAction;
 
   const normalizedPath = urlPath.startsWith("/") ? urlPath.slice(1) : urlPath;
   const handlers = [
     ...getScopeMiddlewares(),
     ...(options.withMiddlewares || []),
-    loadController(controller, action),
+    loadAction(scope, action),
   ];
 
   getRouter().get(`/${normalizedPath}`, ...handlers);
@@ -53,19 +53,19 @@ export const get = (
 
 export const post = (
   urlPath: string,
-  controllerAction: string,
+  scopeAction: string,
   options: RouteOptions = {}
 ) => {
-  const { controller, action } =
-    typeof controllerAction === "string"
-      ? parseControllerString(controllerAction)
-      : controllerAction;
+  const { scope, action } =
+    typeof scopeAction === "string"
+      ? parseScopeActionString(scopeAction)
+      : scopeAction;
 
   const normalizedPath = urlPath.startsWith("/") ? urlPath.slice(1) : urlPath;
   const handlers = [
     ...getScopeMiddlewares(),
     ...(options.withMiddlewares || []),
-    loadController(controller, action),
+    loadAction(scope, action),
   ];
 
   getRouter().post(`/${normalizedPath}`, ...handlers);
@@ -74,10 +74,4 @@ export const post = (
 // Export scope as an alias for routeScope
 export const scope = routeScope;
 
-export {
-  getRouter,
-  getRouterCotrollersPath,
-  setRouterCotrollersPath,
-  resetRouter,
-  routeScope,
-};
+export { getRouter, getActionsPath, setActionsPath, resetRouter, routeScope };

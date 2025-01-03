@@ -1,13 +1,14 @@
 # `MiniframeJS/Router`
 
-Простое и мощное решение для маршрутизации в приложениях на `Express.js`, которое предоставляет чистый и интуитивно понятный способ организации маршрутов и контроллеров.
+Простое и мощное решение для маршрутизации в приложениях на `Express.js`, которое предоставляет чистый и интуитивно понятный способ организации маршрутов и действий.
 
 ## Возможности
 
-- Простой синтаксис определения маршрутов
-- Действия на основе контроллеров
+- Простой синтаксис определения маршрутов (похож на фреймворк Rails)
+- Подход, основанный на действиях (похож на фреймворк Hanami)
+- Каждое действие в отдельном файле для лучшей поддерживаемости
 - Группировка маршрутов для улучшенной организации
-- Автоматическая загрузка контроллеров
+- Автоматическая загрузка действий
 
 ## Документация
 
@@ -39,17 +40,51 @@ pnpm add miniframe-router
 import { root, get, post, getRouter } from "miniframe-router";
 
 // Определение корневого маршрута
-root("index#index");
+root("index#index");  // Использует src/actions/index/indexAction.ts
 
 // Определение GET и POST маршрутов
-get("/users", "users#show");
-post("/users", "users#update");
+get("/users", "users#show");    // Использует src/actions/users/showAction.ts
+post("/users", "users#create"); // Использует src/actions/users/createAction.ts
+```
 
-// Определение GET и POST маршрутов
-get("/posts", "posts#show");
-post("/posts", "posts#update");
+### Структура файлов действий
 
-export default getRouter;
+Каждое действие определяется в своём собственном файле и **должно экспортировать функцию `perform`**:
+
+```bash
+src/
+  actions/
+    index/
+      indexAction.ts    # обработчик для root("index#index")
+    users/
+      showAction.ts     # обработчик для get("/users", "users#show")
+      createAction.ts   # обработчик для post("/users", "users#create")
+    admin/
+      users/
+        listAction.ts   # обработчик для get("/users", "admin/users#list") в scope admin
+```
+
+Пример файла действия:
+
+```typescript
+// src/actions/users/showAction.ts
+import { Request, Response } from "express";
+
+// perform is a required method for each action
+export const perform = (req: Request, res: Response) => {
+  res.json({ message: "List of users" });
+};
+```
+
+### Группировка маршрутов
+
+Группируйте связанные маршруты под общим префиксом:
+
+```ts
+scope("admin", () => {
+  get("/users", "admin/users#list");   // Использует src/actions/admin/users/listAction.ts
+  post("/users", "admin/users#create"); // Использует src/actions/admin/users/createAction.ts
+});
 ```
 
 ### Маршруты с Middleware
@@ -92,9 +127,7 @@ import { validateUser } from "./middlewares/validation";
 import { logRequest } from "./middlewares/logging";
 
 // Применить middleware ко всем маршрутам в группе
-scope(
-  "admin",
-  () => {
+scope("admin", () => {
     // Эти маршруты будут требовать аутентификации
     get("/users", "users#index");
     post("/users", "users#create");
@@ -104,21 +137,15 @@ scope(
       withMiddlewares: [validateUser],
     });
   },
-  {
-    withMiddlewares: [authenticate],
-  }
+  { withMiddlewares: [authenticate] }
 );
 
 // Комбинирование нескольких middleware для группы
-scope(
-  "api",
-  () => {
+scope("api", () => {
     get("/stats", "stats#index");
     get("/health", "health#check");
   },
-  {
-    withMiddlewares: [authenticate, logRequest],
-  }
+  { withMiddlewares: [authenticate, logRequest] }
 );
 ```
 
@@ -127,15 +154,27 @@ Middleware, указанные в опциях группы, будут прим
 Структура файлов приложения:
 
 ```bash
-src
+src/
   index.ts
-
   routes/
-      index.ts
-  controllers/
-      indexController.ts
-      usersController.ts
-      postsController.ts
+    index.ts
+  actions/
+    index/
+      indexAction.ts
+    users/
+      showAction.ts
+      createAction.ts
+      updateAction.ts
+    posts/
+      showAction.ts
+      createAction.ts
+    admin/
+      users/
+        listAction.ts
+        createAction.ts
+      posts/
+        listAction.ts
+        updateAction.ts
 ```
 
 `index.ts`
@@ -143,7 +182,7 @@ src
 ```ts
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import getRoutes from "./routes"; // <<< ОПРЕДЕЛЯЕМ МАРШРУТЫ
+import getRoutes from "./routes";
 
 const app = express();
 
@@ -156,7 +195,7 @@ app.use(
 
 app.use(cookieParser());
 app.use(express.json());
-app.use(getRoutes()); // <<< ИСПОЛЬЗУЕМ МАРШРУТЫ
+app.use(getRoutes());
 
 app.listen(4000, () => {
   console.log(`Сервер запущен на порту: 4000`);
@@ -164,8 +203,6 @@ app.listen(4000, () => {
 ```
 
 ### Группировка маршрутов
-
-Группируйте связанные маршруты под общим префиксом:
 
 `routes/index.ts`
 
@@ -176,63 +213,32 @@ import {
   post,
   getRouter,
   routeScope as scope,
-} from "miniframe-router/routes";
+} from "miniframe-router";
 
+// Корневой маршрут
+root("index#index");  // -> src/actions/index/indexAction.ts
+
+// Базовые маршруты
+get("/users", "users#show");      // -> src/actions/users/showAction.ts
+post("/users", "users#create");   // -> src/actions/users/createAction.ts
+
+// Группировка маршрутов
 scope("admin", () => {
-  get("/users", "users#show");
-  post("/users", "users#update");
-
-  get("/posts", "posts#show");
-  post("/posts", "posts#update");
+  get("/users", "admin/users#list");    // -> src/actions/admin/users/listAction.ts
+  post("/users", "admin/users#create");  // -> src/actions/admin/users/createAction.ts
 });
 
 export default getRouter;
 ```
 
 Это создаст маршруты:
+- GET `/` -> `src/actions/index/indexAction.ts`
+- GET `/users` -> `src/actions/users/showAction.ts`
+- POST `/users` -> `src/actions/users/createAction.ts`
+- GET `/admin/users` -> `src/actions/admin/users/listAction.ts`
+- POST `/admin/users` -> `src/actions/admin/users/createAction.ts`
 
-- GET `/admin/users` -> `controllers/admin/usersController.ts` (действие `show`)
-- POST `/admin/users` -> `controllers/admin/usersController.ts` (действие `update`)
-- GET `/admin/posts` -> `controllers/admin/postsController.ts` (действие `show`)
-- POST `/admin/posts` -> `controllers/admin/postsController.ts` (действие `update`)
-
-### Структура контроллеров
-
-Контроллеры должны находиться в директории `controllers`. Для маршрутов с префиксами контроллеры автоматически ищутся в соответствующих поддиректориях.
-
-```bash
-src
-  index.ts
-
-  routes/
-      index.ts
-  controllers/
-      indexController.ts
-      usersController.ts
-      postsController.ts
-
-      admin/
-          usersController.ts
-          postsController.ts
-```
-
-Пример контроллера:
-
-`controllers/usersController.ts`
-
-```typescript
-import { Request, Response } from "express";
-
-export const show = (req: Request, res: Response) => {
-  res.send("Список пользователей");
-};
-
-export const update = (req: Request, res: Response) => {
-  res.send("Пользователь обновлен");
-};
-```
-
-## Справочник по API
+## API Reference
 
 - `root(controllerAction)`: Определяет корневой маршрут (/)
 - `get(path, controllerAction)`: Определяет GET маршрут
